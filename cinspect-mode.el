@@ -8,7 +8,11 @@
   :group 'completion
   :prefix "cinspect:")
 
-(defcustom cinspect:use-as-jedi-fallback t
+(defcustom cinspect:use-with-jedi t
+  "Use jedi's epc server to get the qualified names of builtins."
+  :group 'cinspect)
+
+(defcustom cinspect:use-as-jedi-goto-fallback t
   "Automatically use as a fallback when jedi:goto-definition hits a python builtin."
   :group 'cinspect)
 
@@ -39,10 +43,10 @@
           (car response)
         full_name))))
 
-(defun cinspect:--python-cinspect (builtin-name)
+(defun cinspect:--python-cinspect (name)
   (deferred:$
     (deferred:process "python" "-c"
-      (format "import cinspect; print cinspect.getsource(%s)" builtin-name))
+      (format "import cinspect; print cinspect.getsource(%s)" name))
     (deferred:nextc it
       (lambda (x)
         (with-temp-buffer-window "cinspect" nil nil
@@ -57,8 +61,10 @@ Uses `cinspect' (https://github.com/punchagan/cinspect) to show CPython source f
 Can be used as a fallback option for `jedi-mode' (https://github.com/tkf/emacs-jedi)."
   :lighter " cinspect"
   :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "C-c f") 'cinspect:inspect)
-            (when cinspect:use-as-jedi-fallback
+            (define-key map (kbd "C-c f") (if cinspect:use-with-jedi
+                                              'cinspect:inspect-with-jedi
+                                            'cinspect:inspect))
+            (when cinspect:use-as-jedi-goto-fallback
               (define-key map (kbd "C-c .") 'cinspect:inspect-with-jedi-as-jedi-fallback))
             map))
 
