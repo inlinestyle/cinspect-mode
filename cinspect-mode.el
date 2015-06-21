@@ -1,7 +1,20 @@
-(require 'cl-lib)
-(require 'deferred)
+;;; cinspect-mode.el --- Use cinspect to look at the CPython source of builtins and other C objects!
+
+;; Copyright (C) 2015 Ben Yelsey
+
+;; Author: Ben Yelsey <ben.yelsey@gmail.com>
+;; Version: 0.0.1
+;; Keywords: python
+
+;;; Commentary:
+
+;; Use [cinspect](https://github.com/punchagan/cinspect) to look at the CPython source of builtins and other C objects!
+;; `cinspect-mode` can and optimally should be used in concert with [Jedi.el](http://tkf.github.io/emacs-jedi).
 
 ;;; Code:
+
+(require 'cl-lib)
+(require 'deferred)
 
 (defgroup cinspect nil
   "Inspect CPython builtins."
@@ -72,3 +85,5 @@ Can be used as a fallback option for `jedi-mode' (https://github.com/tkf/emacs-j
 (add-hook 'python-mode-hook 'cinspect-mode)
 
 (provide 'cinspect-mode)
+
+;;; cinspect-mode.el ends here
