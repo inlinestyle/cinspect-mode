@@ -17,6 +17,10 @@ TEST_DEP_2=deferred
 TEST_DEP_2_STABLE_URL=https://raw.githubusercontent.com/kiwanami/emacs-deferred/v0.3.2/deferred.el
 TEST_DEP_2_LATEST_URL=https://raw.githubusercontent.com/kiwanami/emacs-deferred/master/deferred.el
 
+PYTHON ?= python
+CINSPECT_REPO=https://github.com/punchagan/cinspect.git
+CINSPECT_GET_INDEXES ?= cinspect-download
+
 .PHONY : build downloads downloads-latest autoloads test-autoloads test-travis \
          test test-interactive clean edit test-dep-1 test-dep-2 test-dep-3     \
          test-dep-4 test-dep-5 test-dep-6 test-dep-7 test-dep-8 test-dep-9
@@ -26,6 +30,12 @@ build :
 	    "(progn                                \
 	      (setq byte-compile-error-on-warn t)  \
 	      (batch-byte-compile))" *.el
+
+install-cinspect :
+	git clone $(CINSPECT_REPO)           && \
+	cd cinspect                          && \
+	$(PYTHON) setup.py develop           && \
+	$(CINSPECT_GET_INDEXES)
 
 test-dep-1 :
 	@cd $(TEST_DIR)                                      && \

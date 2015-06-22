@@ -88,6 +88,8 @@ before_install:
   - git submodule --quiet update --init --recursive
 
 install:
+  - make install-cinspect
+
 # - if [ "$EMACS" = 'xemacs21' ]; then
 #       sudo apt-get -qq update &&
 #       sudo apt-get -qq -f install &&
