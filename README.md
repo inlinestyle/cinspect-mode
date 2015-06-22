@@ -5,9 +5,7 @@ Use [cinspect](https://github.com/punchagan/cinspect) to look at the CPython sou
 
 ![](https://raw.github.com/inlinestyle/cinspect-mode/master/images/cinspect-startswith.png)
 
-In addition to being a great asset for python editing in general, we can use Jedi.el's analysis to trace objects even if they've been renamed:
-
-With Jedi.el use enabled, we can put our cursor on `sort` and correctly determine that we're looking at Python's `list.sort` builtin:
+In addition to being a great asset for python editing in general, we can use Jedi.el's analysis to trace objects even if they've been renamed. With Jedi.el use enabled, we can put our cursor on `sort` and correctly determine that we're looking at Python's `list.sort` builtin:
 ```python
 foo = [1, 6, 7]
 foo.sort()
