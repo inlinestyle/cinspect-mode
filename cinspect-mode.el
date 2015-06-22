@@ -29,6 +29,9 @@
   "Automatically use as a fallback when jedi:goto-definition hits a python builtin."
   :group 'cinspect)
 
+(declare-function jedi:goto-definition "jedi-core" ())
+(declare-function jedi:call-deferred "jedi-core" (method-name))
+
 (defun cinspect:inspect-with-jedi-as-jedi-fallback ()
   (interactive)
   (deferred:nextc (jedi:goto-definition)
