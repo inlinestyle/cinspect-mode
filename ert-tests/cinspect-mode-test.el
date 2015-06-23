@@ -20,6 +20,8 @@
   (deferred:sync!
     (cinspect:--python-cinspect "map"))
   (with-current-buffer "cinspect"
-    (should (string-match "builtin_map" (buffer-substring-no-properties 1 100)))))
+    (progn
+      (message (buffer-substring-no-properties 1 200))
+      (should (string-match "builtin_map" (buffer-substring-no-properties 1 100))))))
 
 ;;; cinspect-mode-test.el ends here
