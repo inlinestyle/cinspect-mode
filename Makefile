@@ -34,7 +34,7 @@ build :
 install-cinspect :
 	git clone $(CINSPECT_REPO)           && \
 	cd cinspect                          && \
-	$(PYTHON) setup.py install           && \
+	$(PYTHON) setup.py develop           && \
 	$(CINSPECT_GET_INDEXES)
 
 test-dep-1 :
