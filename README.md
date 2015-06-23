@@ -18,8 +18,8 @@ sorted([1, 6, 7]) # Can do without Jedi.el
 ```
 
 ## TODO
- - Add `cinspect` installation to Makefile
- - Add more meaningful tests (relies on `cinspect` install)
+ - Make the `"cinspect"` buffer more usable. Currently it's in "readonly" `c-mode`. I'd like to have something more like `help-mode` with `c-mode`'s syntax highlighting.
+ - Add test installation of Jedi.el
  - Add Jedi.el integration tests (will have to install Jedi.el)
  - Get on (M)ELPA
  - Add integration with other emacs/python analyzers (accepting PRs!)
