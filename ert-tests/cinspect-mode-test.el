@@ -21,7 +21,7 @@
     (cinspect:--python-cinspect "map"))
   (with-current-buffer "cinspect"
     (progn
-      (message (buffer-substring-no-properties 1 200))
+      (message (buffer-substring-no-properties 1 700))
       (should (string-match "builtin_map" (buffer-substring-no-properties 1 100))))))
 
 ;;; cinspect-mode-test.el ends here
