@@ -13,9 +13,13 @@
 ;;; Code:
 
 (require 'ert)
+(require 'deferred)
 (require 'cinspect-mode)
 
-(ert-deftest cinspect-mode-test-hello-world ()
-  (should (equal "a" "a")))
+(ert-deftest cinspect-mode-test-python-cinspect ()
+  (deferred:sync!
+    (cinspect:--python-cinspect "map"))
+  (with-current-buffer "cinspect"
+    (should (string-match "builtin_map" (buffer-substring-no-properties 1 100)))))
 
 ;;; cinspect-mode-test.el ends here

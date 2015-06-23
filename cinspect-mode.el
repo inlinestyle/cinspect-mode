@@ -64,11 +64,11 @@
     (deferred:process "python" "-c"
       (format "import cinspect; print cinspect.getsource(%s)" name))
     (deferred:nextc it
-      (lambda (x)
+      (lambda (response)
         (with-temp-buffer-window "cinspect" nil nil
                                  (with-current-buffer "cinspect"
                                    (c-mode))
-                                 (princ x))))))
+                                 (princ response))))))
 
 ;;;###autoload
 (define-minor-mode cinspect-mode
