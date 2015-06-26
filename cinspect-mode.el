@@ -5,6 +5,9 @@
 ;; Author: Ben Yelsey <ben.yelsey@gmail.com>
 ;; Version: 0.0.1
 ;; Keywords: python
+;; Homepage: https://github.com/inlinestyle/cinspect-mode
+
+;; Package-Requires: ((emacs "24") (cl-lib "0.5") (deferred "0.3.1") (python-environment "0.0.2"))
 
 ;;; Commentary:
 
@@ -15,6 +18,8 @@
 
 (require 'cl-lib)
 (require 'deferred)
+(require 'python-environment)
+
 
 (defgroup cinspect nil
   "Inspect CPython builtins."
@@ -69,6 +74,11 @@
                                  (with-current-buffer "cinspect"
                                    (c-mode))
                                  (princ response))))))
+
+(defun cinspect:install-cinspect ()
+  (interactive)
+  (python-environment-run-block '("make" "install-cinspect"))
+  (message "done"))
 
 ;;;###autoload
 (define-minor-mode cinspect-mode

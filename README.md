@@ -26,5 +26,7 @@ sorted([1, 6, 7]) # Can do without Jedi.el
 
 ## Acknowledgements
  - [cinspect](https://github.com/punchagan/cinspect)
+ - [deferred.el](https://github.com/kiwanami/emacs-deferred)
  - [Jedi.el](http://tkf.github.io/emacs-jedi)
+ - [python-environment.el](https://github.com/tkf/emacs-python-environment)
  - [emacs-travis](https://github.com/rolandwalker/emacs-travis)
