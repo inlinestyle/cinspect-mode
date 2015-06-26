@@ -77,8 +77,24 @@
 
 (defun cinspect:install-cinspect ()
   (interactive)
-  (python-environment-run-block '("make" "install-cinspect"))
-  (message "done"))
+  (let ((current-dir default-directory))
+    (deferred:$
+      (deferred:try
+        (deferred:$
+          (deferred:process "git" "clone" "https://github.com/punchagan/cinspect.git" "/tmp/cinspect")
+          (deferred:nextc it
+            (lambda () (cd "/tmp/cinspect"))
+            (deferred:nextc it
+              (lambda ()
+                (python-environment-run '("python" "setup.py" "develop"))))
+            (deferred:nextc it
+              (lambda ()
+                (deferred:process "cinspect-download")))
+            (deferred:nextc it
+              (lambda (reply)
+                (message "BAR: %s" reply)))))
+        :catch (lambda (err) (message "Error installing cinspect: %s" err))
+        :finally (lambda () (cd current-dir))))))
 
 ;;;###autoload
 (define-minor-mode cinspect-mode
