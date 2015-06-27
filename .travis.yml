@@ -86,9 +86,9 @@ matrix:
 
 before_install:
   - git submodule --quiet update --init --recursive
+  - curl -fsSkL --max-time 10 --retry 10 --retry-delay 10 https://raw.github.com/cask/cask/master/go | python
 
 install:
-  - sudo make install-cinspect
 
 # - if [ "$EMACS" = 'xemacs21' ]; then
 #       sudo apt-get -qq update &&
@@ -127,13 +127,6 @@ install:
         sudo apt-get -qq -f install &&
         sudo apt-get -qq install emacs-snapshot &&
         sudo apt-get -qq install emacs-snapshot-el;
-    fi
-
-before_script:
-  - if [ "$EMACS" = 'emacs-snapshot' ]; then
-        make downloads-latest;
-    else
-        make downloads;
     fi
 
 ###
