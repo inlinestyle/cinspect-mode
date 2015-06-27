@@ -77,24 +77,35 @@
 
 (defun cinspect:install-cinspect ()
   (interactive)
-  (let ((current-dir default-directory))
+  (lexical-let ((current-dir default-directory)
+                (tmp-dir "/tmp/cinspect")
+                (index-dir "~/.cinspect"))
     (deferred:$
-      (deferred:try
-        (deferred:$
-          (deferred:process "git" "clone" "https://github.com/punchagan/cinspect.git" "/tmp/cinspect")
-          (deferred:nextc it
-            (lambda () (cd "/tmp/cinspect"))
-            (deferred:nextc it
-              (lambda ()
-                (python-environment-run '("python" "setup.py" "develop"))))
-            (deferred:nextc it
-              (lambda ()
-                (deferred:process "cinspect-download")))
-            (deferred:nextc it
-              (lambda (reply)
-                (message "BAR: %s" reply)))))
-        :catch (lambda (err) (message "Error installing cinspect: %s" err))
-        :finally (lambda () (cd current-dir))))))
+      (deferred:$
+        (if (file-exists-p tmp-dir)
+            (message "cinspect download found at %s, skipping download" tmp-dir)
+          (deferred:process "git" "clone" "https://github.com/punchagan/cinspect.git" tmp-dir))
+        (deferred:nextc it
+          (lambda () (cd tmp-dir)))
+        (deferred:nextc it
+          (lambda ()
+            (python-environment-run '("python" "setup.py" "develop"))))
+        (deferred:nextc it
+          (lambda ()
+            (if (file-exists-p index-dir)
+                (message "cinspect indexes found at %s, skipping index download" index-dir)
+              (python-environment-run '("cinspect-download")))))
+        (deferred:nextc it
+          (lambda (reply)
+            (message "Done installing cinspect"))))
+      (deferred:error it
+        (lambda (err) (message "Error installing cinspect: %s" err)))
+      (deferred:nextc it
+        (lambda ()
+          (cd current-dir)
+          (when (file-exists-p tmp-dir)
+            (delete-directory tmp-dir t))
+          (message "Done cleaning up"))))))
 
 ;;;###autoload
 (define-minor-mode cinspect-mode
