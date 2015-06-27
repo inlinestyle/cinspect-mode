@@ -4,7 +4,7 @@ EMACS_CLEAN=-Q
 EMACS_BATCH=$(EMACS_CLEAN) --batch
 TESTS=
 
-CASK=cask
+CASK ?= ~/.cask/bin/cask
 CASKEMACS = $(CASK) exec $(EMACS)
 
 CURL=curl --silent
