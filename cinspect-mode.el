@@ -87,7 +87,9 @@
             (message "cinspect download found at %s, skipping download" tmp-dir)
           (deferred:process "git" "clone" "https://github.com/punchagan/cinspect.git" tmp-dir))
         (deferred:nextc it
-          (lambda () (cd tmp-dir)))
+          (lambda ()
+            (cd tmp-dir)
+            (deferred:process "pip install virtualenv")))
         (deferred:nextc it
           (lambda ()
             (python-environment-run '("python" "setup.py" "install"))))
