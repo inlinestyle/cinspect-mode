@@ -86,7 +86,6 @@ matrix:
 
 before_install:
   - git submodule --quiet update --init --recursive
-  - curl -fsSkL --max-time 10 --retry 10 --retry-delay 10 https://raw.github.com/cask/cask/master/go | python
 
 install:
 
@@ -128,6 +127,8 @@ install:
         sudo apt-get -qq install emacs-snapshot &&
         sudo apt-get -qq install emacs-snapshot-el;
     fi
+
+  - curl -fsSkL --max-time 10 --retry 10 --retry-delay 10 https://raw.github.com/cask/cask/master/go | python
 
 ###
 ### the actual build/test command
