@@ -89,7 +89,7 @@
         (deferred:nextc it
           (lambda ()
             (cd tmp-dir)
-            (deferred:process "pip install virtualenv")))
+            (deferred:process "pip" "install" "virtualenv")))
         (deferred:nextc it
           (lambda ()
             (python-environment-run '("python" "setup.py" "install"))))
