@@ -16,6 +16,9 @@
 (require 'deferred)
 (require 'cinspect-mode)
 
+(deferred:sync!
+  (cinspect:install-cinspect))
+
 (ert-deftest cinspect-mode-test-python-cinspect ()
   (deferred:sync!
     (cinspect:--python-cinspect "map"))

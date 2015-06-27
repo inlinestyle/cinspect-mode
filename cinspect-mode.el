@@ -66,8 +66,9 @@
 
 (defun cinspect:--python-cinspect (name)
   (deferred:$
-    (deferred:process "python" "-c"
-      (format "import cinspect; print cinspect.getsource(%s)" name))
+    (python-environment-run
+     (list "python" "-c"
+           (format "import cinspect; print cinspect.getsource(%s)" name)))
     (deferred:nextc it
       (lambda (response)
         (with-temp-buffer-window "cinspect" nil nil
@@ -89,7 +90,7 @@
           (lambda () (cd tmp-dir)))
         (deferred:nextc it
           (lambda ()
-            (python-environment-run '("python" "setup.py" "develop"))))
+            (python-environment-run '("python" "setup.py" "install"))))
         (deferred:nextc it
           (lambda ()
             (if (file-exists-p index-dir)
