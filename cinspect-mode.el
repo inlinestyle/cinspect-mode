@@ -34,6 +34,14 @@
   "Automatically use as a fallback when jedi:goto-definition hits a python builtin."
   :group 'cinspect)
 
+(defcustom cinspect:index-directory "~/.cinspect"
+  "Location of cinspect's CPython indexes"
+  :group 'cinspect)
+
+(defcustom cinspect:tmp-directory "/tmp/cinspect"
+  "Location for temporary download of cinspect repo"
+  :group 'cinspect)
+
 (declare-function jedi:goto-definition "jedi-core" ())
 (declare-function jedi:call-deferred "jedi-core" (method-name))
 
@@ -76,28 +84,39 @@
                                    (c-mode))
                                  (princ response))))))
 
+(defun cinspect:--ensure-virtualenv ()
+  (deferred:$
+    (deferred:process "pip" "list")
+    (deferred:nextc it
+      (lambda (response)
+        (if (string-match "virtualenv" response)
+            (message "virtualenv executable found")
+          (deferred:process "pip" "install" "--user" "virtualenv"))))))
+
+(defun cinspect:--ensure-indexes ()
+  (if (file-exists-p cinspect:index-directory)
+      (message "cinspect indexes found at %s, skipping index download" cinspect:index-directory)
+    (python-environment-run '("cinspect-download"))))
+
+(defun cinspect:--ensure-cinspect-repo ()
+  (if (file-exists-p cinspect:tmp-directory)
+      (message "cinspect download found at %s, skipping download" cinspect:tmp-directory)
+    (deferred:process "git" "clone" "https://github.com/punchagan/cinspect.git" cinspect:tmp-directory)))
+
 (defun cinspect:install-cinspect ()
   (interactive)
-  (lexical-let ((current-dir default-directory)
-                (tmp-dir "/tmp/cinspect")
-                (index-dir "~/.cinspect"))
+  (lexical-let ((current-dir default-directory))
     (deferred:$
       (deferred:$
-        (if (file-exists-p tmp-dir)
-            (message "cinspect download found at %s, skipping download" tmp-dir)
-          (deferred:process "git" "clone" "https://github.com/punchagan/cinspect.git" tmp-dir))
+        (cinspect:--ensure-cinspect-repo)
         (deferred:nextc it
           (lambda ()
-            (cd tmp-dir)
-            (deferred:process "sudo" "pip" "install" "virtualenv")))
+            (cd cinspect:tmp-directory)
+            (cinspect:--ensure-virtualenv)))
         (deferred:nextc it
           (lambda ()
             (python-environment-run '("python" "setup.py" "install"))))
-        (deferred:nextc it
-          (lambda ()
-            (if (file-exists-p index-dir)
-                (message "cinspect indexes found at %s, skipping index download" index-dir)
-              (python-environment-run '("cinspect-download")))))
+        (deferred:nextc it #'cinspect:--ensure-indexes)
         (deferred:nextc it
           (lambda (reply)
             (message "Done installing cinspect"))))
@@ -106,8 +125,8 @@
       (deferred:nextc it
         (lambda ()
           (cd current-dir)
-          (when (file-exists-p tmp-dir)
-            (delete-directory tmp-dir t))
+          (when (file-exists-p cinspect:tmp-directory)
+            (delete-directory cinspect:tmp-directory t))
           (message "Done cleaning up"))))))
 
 ;;;###autoload
