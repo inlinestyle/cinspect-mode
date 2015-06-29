@@ -17,9 +17,14 @@ sorted([1, 6, 7]) # Can do without Jedi.el
 [1, 6, 7].sort() # Can't do without Jedi.el
 ```
 
+## Usage
+Run `cinspect:install-cinspect` if you don't have `cinspect` installed in your emacs python environent.
+ - `C-c f`: `cinspect:inspect`
+ - `C-c .`: (Requires `Jedi.el`) `jedi:goto-definition` with fallback to `cinspect:inspect-with-jedi` 
+
 ## TODO
  - Make the `"cinspect"` buffer more usable. Currently it's in "readonly" `c-mode`. I'd like to have something more like `help-mode` with `c-mode`'s syntax highlighting.
- - Switch travis build to using Cask
+ - Update USAGE section
  - Add ability to use locally generated cinspect indexes
  - Add test installation of Jedi.el
  - Add Jedi.el integration tests (will have to install Jedi.el)
