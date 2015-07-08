@@ -25,4 +25,11 @@
   (with-current-buffer "cinspect"
     (should (string-match "builtin_map" (buffer-substring-no-properties 1 (1+ (buffer-size)))))))
 
+(ert-deftest cinspect-mode-test-python-cinspect-none ()
+  "For whatever reason, Jedi reports 'None' as 'NoneType'"
+  (deferred:sync!
+    (cinspect:--python-cinspect "NoneType"))
+  (with-current-buffer "cinspect"
+    (should (string-match "PyNone_Type" (buffer-substring-no-properties 1 (1+ (buffer-size)))))))
+
 ;;; cinspect-mode-test.el ends here

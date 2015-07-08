@@ -76,7 +76,7 @@
   (deferred:$
     (python-environment-run
      (list "python" "-c"
-           (format "import cinspect; print cinspect.getsource(%s)" name)))
+           (format "import cinspect; from types import NoneType; print cinspect.getsource(%s)" name)))
     (deferred:nextc it
       (lambda (response)
         (with-temp-buffer-window "cinspect" nil nil
