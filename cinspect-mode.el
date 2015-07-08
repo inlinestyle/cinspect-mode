@@ -26,7 +26,7 @@
   :group 'completion
   :prefix "cinspect:")
 
-(defcustom cinspect:use-with-jedi t
+(defcustom cinspect:use-with-jedi (package-installed-p 'jedi)
   "Use jedi's epc server to get the qualified names of builtins."
   :group 'cinspect)
 
