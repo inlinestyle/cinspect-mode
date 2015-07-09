@@ -79,9 +79,10 @@
            (format "import cinspect; from types import NoneType; print cinspect.getsource(%s)" name)))
     (deferred:nextc it
       (lambda (response)
-        (with-temp-buffer-window "cinspect" nil nil
-                                 (with-current-buffer "cinspect"
-                                   (c-mode))
+        (with-temp-buffer-window "*cinspect*" nil nil
+                                 (with-current-buffer "*cinspect*"
+                                   (c-mode)
+                                   (use-local-map (copy-keymap help-mode-map)))
                                  (princ response))))
     (deferred:error it
       (lambda (err)
