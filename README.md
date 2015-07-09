@@ -23,13 +23,11 @@ Run `cinspect:install-cinspect` if you don't have `cinspect` installed in your e
  - `C-c .`: (Requires `Jedi.el`) `jedi:goto-definition` with fallback to `cinspect:inspect-with-jedi` 
 
 ## TODO
- - Make the `"cinspect"` buffer more usable. Currently it's in "readonly" `c-mode`. I'd like to have something more like `help-mode` with `c-mode`'s syntax highlighting.
- - Update USAGE section
- - Add ability to use locally generated cinspect indexes
  - Add test installation of Jedi.el
  - Add Jedi.el integration tests (will have to install Jedi.el)
- - Get on (M)ELPA
+ - Get on the various emacs package repositories
  - Add integration with other emacs/python analyzers (accepting PRs!)
+ - Add ability to use locally generated cinspect indexes (may require substantial refactor)
 
 ## Acknowledgements
  - [cinspect](https://github.com/punchagan/cinspect)
