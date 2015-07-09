@@ -85,7 +85,7 @@
                                  (princ response))))
     (deferred:error it
       (lambda (err)
-        (if (string-match "ImportError: No module named cinspect" err)
+        (if (string-match "ImportError: No module named cinspect" (or (cadr err) ""))
             (message "Could not find cinspect in emacs python environment. Have you run `cinspect:install-cinspect'?")
           (message "Error running cinspect: %s" err))))))
 
