@@ -82,7 +82,12 @@
         (with-temp-buffer-window "cinspect" nil nil
                                  (with-current-buffer "cinspect"
                                    (c-mode))
-                                 (princ response))))))
+                                 (princ response))))
+    (deferred:error it
+      (lambda (err)
+        (if (string-match "ImportError: No module named cinspect" err)
+            (message "Could not find cinspect in emacs python environment. Have you run `cinspect:install-cinspect'?")
+          (message "Error running cinspect: %s" err))))))
 
 (defun cinspect:--ensure-virtualenv ()
   (deferred:$
