@@ -18,6 +18,7 @@
 
 (require 'cl-lib)
 (require 'deferred)
+(require 'help-mode)
 (require 'python-environment)
 
 
