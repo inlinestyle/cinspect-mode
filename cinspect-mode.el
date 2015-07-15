@@ -43,8 +43,13 @@
   "Location for temporary download of cinspect repo"
   :group 'cinspect)
 
+(defcustom cinspect:buffer-name "*cinspect*"
+  "Name for cinspect's readonly C source code buffer"
+  :group 'cinspect)
+
 (declare-function jedi:goto-definition "jedi-core" ())
 (declare-function jedi:call-deferred "jedi-core" (method-name))
+
 
 (defun cinspect:inspect-with-jedi-as-jedi-fallback ()
   (interactive)
@@ -132,8 +137,8 @@
      (cinspect:--format-python-command name import-statement))
     (deferred:nextc it
       (lambda (response)
-        (with-temp-buffer-window "*cinspect*" nil nil
-                                 (with-current-buffer "*cinspect*"
+        (with-temp-buffer-window cinspect:buffer-name nil nil
+                                 (with-current-buffer cinspect:buffer-name
                                    (c-mode)
                                    (use-local-map (copy-keymap help-mode-map)))
                                  (princ response))))
