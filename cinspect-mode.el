@@ -3,7 +3,7 @@
 ;; Copyright (C) 2015 Ben Yelsey
 
 ;; Author: Ben Yelsey <ben.yelsey@gmail.com>
-;; Version: 0.0.1
+;; Version: 0.1.0
 ;; Keywords: python
 ;; Homepage: https://github.com/inlinestyle/cinspect-mode
 
@@ -51,16 +51,16 @@
 (declare-function jedi:call-deferred "jedi-core" (method-name))
 
 
-(defun cinspect:inspect-with-jedi-as-jedi-fallback ()
+(defun cinspect:getsource-with-jedi-as-jedi-fallback ()
   (interactive)
   (deferred:nextc (jedi:goto-definition)
     (lambda (message)
       (when (and message (or (string-match "builtin" message)
                              (string-match "Definition not found" message)
                              (string-match "File .+ does not exist" message)))
-        (cinspect:inspect-with-jedi)))))
+        (cinspect:getsource-with-jedi)))))
 
-(defun cinspect:inspect-with-jedi ()
+(defun cinspect:getsource-with-jedi ()
   (interactive)
   (deferred:nextc (cinspect:--python-jedi-get-name-and-import-statement)
     (lambda (name-and-import-statement)
@@ -69,11 +69,45 @@
         (message "Inspecting `%s'" name)
         (cinspect:--python-cinspect name import-statement)))))
 
-(defun cinspect:inspect ()
+(defun cinspect:getsource ()
   (interactive)
   (let ((name (symbol-at-point)))
     (message "Inspecting `%s'" name)
     (cinspect:--python-cinspect name)))
+
+(defun cinspect:--join-python-statements (&rest statements)
+  (mapconcat (lambda (statement)
+               (if (zerop (length statement))
+                   ""
+                 (concat statement "; ")))
+             statements ""))
+
+(defun cinspect:--format-python-command (name import-statement)
+  (list "python" "-c"
+        (cinspect:--join-python-statements
+         "import cinspect"
+         (if (equal name "NoneType")
+             "from types import NoneType"
+           import-statement)
+         (format "print cinspect.getsource(%s)" name))))
+
+(defun cinspect:--python-cinspect (name &optional import-statement)
+  (deferred:$
+    (python-environment-run
+     (cinspect:--format-python-command name import-statement))
+    (deferred:nextc it
+      (lambda (response)
+        (with-temp-buffer-window cinspect:buffer-name nil nil
+                                 (with-current-buffer cinspect:buffer-name
+                                   (c-mode)
+                                   (use-local-map (copy-keymap help-mode-map)))
+                                 (princ response))))
+    (deferred:error it
+      (lambda (err)
+        (if (string-match "ImportError: No module named cinspect" (or (cadr err) ""))
+            (message "Could not find cinspect in emacs python environment. Have you run `cinspect:install-cinspect'?")
+          (message "Error running cinspect: %s" err))))))
+
 
 ;; Begin Jedi interface
 
@@ -117,38 +151,6 @@
 
 ;; End Jedi interface
 
-(defun cinspect:--join-python-statements (&rest statements)
-  (mapconcat (lambda (statement)
-               (if (zerop (length statement))
-                   ""
-                 (concat statement "; ")))
-             statements ""))
-
-(defun cinspect:--format-python-command (name import-statement)
-  (list "python" "-c"
-        (cinspect:--join-python-statements
-         "import cinspect"
-         (if (equal name "NoneType")
-             "from types import NoneType"
-           import-statement)
-         (format "print cinspect.getsource(%s)" name))))
-
-(defun cinspect:--python-cinspect (name &optional import-statement)
-  (deferred:$
-    (python-environment-run
-     (cinspect:--format-python-command name import-statement))
-    (deferred:nextc it
-      (lambda (response)
-        (with-temp-buffer-window cinspect:buffer-name nil nil
-                                 (with-current-buffer cinspect:buffer-name
-                                   (c-mode)
-                                   (use-local-map (copy-keymap help-mode-map)))
-                                 (princ response))))
-    (deferred:error it
-      (lambda (err)
-        (if (string-match "ImportError: No module named cinspect" (or (cadr err) ""))
-            (message "Could not find cinspect in emacs python environment. Have you run `cinspect:install-cinspect'?")
-          (message "Error running cinspect: %s" err))))))
 
 ;; Begin installation helpers
 
@@ -207,10 +209,10 @@ Can be used as a fallback option for `jedi-mode' (https://github.com/tkf/emacs-j
   :lighter " cinspect"
   :keymap (let ((map (make-sparse-keymap)))
             (define-key map (kbd "C-c f") (if cinspect:use-with-jedi
-                                              'cinspect:inspect-with-jedi
-                                            'cinspect:inspect))
+                                              'cinspect:getsource-with-jedi
+                                            'cinspect:getsource))
             (when cinspect:use-as-jedi-goto-fallback
-              (define-key map (kbd "C-c .") 'cinspect:inspect-with-jedi-as-jedi-fallback))
+              (define-key map (kbd "C-c .") 'cinspect:getsource-with-jedi-as-jedi-fallback))
             map))
 
 ;;;###autoload
