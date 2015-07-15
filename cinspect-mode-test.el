@@ -22,14 +22,14 @@
 (ert-deftest cinspect-mode-test-python-cinspect ()
   (deferred:sync!
     (cinspect:--python-cinspect "map"))
-  (with-current-buffer "*cinspect*"
+  (with-current-buffer cinspect:buffer-name
     (should (string-match "builtin_map" (buffer-substring-no-properties 1 (1+ (buffer-size)))))))
 
 (ert-deftest cinspect-mode-test-python-cinspect-none ()
   "For whatever reason, 'NoneType' is not directly accessible from __builtin__."
   (deferred:sync!
     (cinspect:--python-cinspect "NoneType"))
-  (with-current-buffer "*cinspect*"
+  (with-current-buffer cinspect:buffer-name
     (should (string-match "PyNone_Type" (buffer-substring-no-properties 1 (1+ (buffer-size)))))))
 
 (ert-deftest cinspect-mode-test-join-python-statements ()
