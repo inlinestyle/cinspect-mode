@@ -55,10 +55,12 @@
 
 (defun cinspect:inspect-with-jedi ()
   (interactive)
-  (deferred:nextc (cinspect:--python-jedi-get-name)
-    (lambda (name)
-      (message "Inspecting `%s'" name)
-      (cinspect:--python-cinspect name))))
+  (deferred:nextc (cinspect:--python-jedi-get-name-and-import-statement)
+    (lambda (name-and-import-statement)
+      (let ((name (car name-and-import-statement))
+            (import-statement (cadr name-and-import-statement)))
+        (message "Inspecting `%s'" name)
+        (cinspect:--python-cinspect name import-statement)))))
 
 (defun cinspect:inspect ()
   (interactive)
@@ -66,18 +68,68 @@
     (message "Inspecting `%s'" name)
     (cinspect:--python-cinspect name)))
 
-(defun cinspect:--python-jedi-get-name ()
+;; Begin Jedi interface
+
+(defun cinspect:--python-builtin-p (module)
+  (equal module "__builtin__"))
+
+(defun cinspect:--format-module (desc-with-module)
+  "Expects a `:desc_with_module' field as returned by jediepcserver's 'get_definition' endpoint."
+  (car (split-string desc-with-module ":")))
+
+(defun cinspect:--format-import-from-module (module name)
+  (if (cinspect:--python-builtin-p module)
+      ""
+    (format "from %s import %s" module name)))
+
+(defun cinspect:--format-name (module full-name name type)
+  (pcase type
+    ("class"    (if (cinspect:--python-builtin-p module) full-name name))
+    ("function" (if (cinspect:--python-builtin-p module) full-name name))
+    ("instance" (if (cinspect:--python-builtin-p module) full-name name))
+    ("module"   full-name)
+    (_          full-name)))
+
+(defun cinspect:--format-import-statement (module full-name name type)
+  (pcase type
+    ("class"    (cinspect:--format-import-from-module module name))
+    ("function" (cinspect:--format-import-from-module module name))
+    ("instance" (cinspect:--format-import-from-module module name))
+    ("module"   (format "import %s" full-name))
+    (_          "")))
+
+(defun cinspect:--python-jedi-get-name-and-import-statement ()
   (deferred:nextc (jedi:call-deferred 'get_definition)
     (lambda (response)
-      (cl-destructuring-bind (&key full_name &allow-other-keys)
+      (cl-destructuring-bind (&key desc_with_module full_name name type &allow-other-keys)
           (car response)
-        full_name))))
+        (let* ((module (cinspect:--format-module desc_with_module))
+               (import-statement (cinspect:--format-import-statement module full_name name type))
+               (name (cinspect:--format-name module full_name name type)))
+          (list name import-statement))))))
 
-(defun cinspect:--python-cinspect (name)
+;; End Jedi interface
+
+(defun cinspect:--join-python-statements (&rest statements)
+  (mapconcat (lambda (statement)
+               (if (zerop (length statement))
+                   ""
+                 (concat statement "; ")))
+             statements ""))
+
+(defun cinspect:--format-python-command (name import-statement)
+  (list "python" "-c"
+        (cinspect:--join-python-statements
+         "import cinspect"
+         (if (equal name "NoneType")
+             "from types import NoneType"
+           import-statement)
+         (format "print cinspect.getsource(%s)" name))))
+
+(defun cinspect:--python-cinspect (name &optional import-statement)
   (deferred:$
     (python-environment-run
-     (list "python" "-c"
-           (format "import cinspect; from types import NoneType; print cinspect.getsource(%s)" name)))
+     (cinspect:--format-python-command name import-statement))
     (deferred:nextc it
       (lambda (response)
         (with-temp-buffer-window "*cinspect*" nil nil
@@ -90,6 +142,8 @@
         (if (string-match "ImportError: No module named cinspect" (or (cadr err) ""))
             (message "Could not find cinspect in emacs python environment. Have you run `cinspect:install-cinspect'?")
           (message "Error running cinspect: %s" err))))))
+
+;; Begin installation helpers
 
 (defun cinspect:--ensure-virtualenv ()
   (deferred:$
@@ -135,6 +189,8 @@
           (when (file-exists-p cinspect:tmp-directory)
             (delete-directory cinspect:tmp-directory t))
           (message "Done cleaning up"))))))
+
+;; End installation helpers
 
 ;;;###autoload
 (define-minor-mode cinspect-mode
