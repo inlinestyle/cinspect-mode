@@ -55,7 +55,9 @@
   (interactive)
   (deferred:nextc (jedi:goto-definition)
     (lambda (message)
-      (when (and message (string-match "builtin" message))
+      (when (and message (or (string-match "builtin" message)
+                             (string-match "Definition not found" message)
+                             (string-match "File .+ does not exist" message)))
         (cinspect:inspect-with-jedi)))))
 
 (defun cinspect:inspect-with-jedi ()
