@@ -3,7 +3,7 @@
 ;; Copyright (C) 2015 Ben Yelsey
 
 ;; Author: Ben Yelsey <ben.yelsey@gmail.com>
-;; Version: 0.0.1
+;; Version: 0.1.0
 ;; Keywords: python
 ;; Homepage: https://github.com/inlinestyle/cinspect-mode
 
