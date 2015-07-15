@@ -51,16 +51,16 @@
 (declare-function jedi:call-deferred "jedi-core" (method-name))
 
 
-(defun cinspect:inspect-with-jedi-as-jedi-fallback ()
+(defun cinspect:getsource-with-jedi-as-jedi-fallback ()
   (interactive)
   (deferred:nextc (jedi:goto-definition)
     (lambda (message)
       (when (and message (or (string-match "builtin" message)
                              (string-match "Definition not found" message)
                              (string-match "File .+ does not exist" message)))
-        (cinspect:inspect-with-jedi)))))
+        (cinspect:getsource-with-jedi)))))
 
-(defun cinspect:inspect-with-jedi ()
+(defun cinspect:getsource-with-jedi ()
   (interactive)
   (deferred:nextc (cinspect:--python-jedi-get-name-and-import-statement)
     (lambda (name-and-import-statement)
@@ -69,7 +69,7 @@
         (message "Inspecting `%s'" name)
         (cinspect:--python-cinspect name import-statement)))))
 
-(defun cinspect:inspect ()
+(defun cinspect:getsource ()
   (interactive)
   (let ((name (symbol-at-point)))
     (message "Inspecting `%s'" name)
@@ -207,10 +207,10 @@ Can be used as a fallback option for `jedi-mode' (https://github.com/tkf/emacs-j
   :lighter " cinspect"
   :keymap (let ((map (make-sparse-keymap)))
             (define-key map (kbd "C-c f") (if cinspect:use-with-jedi
-                                              'cinspect:inspect-with-jedi
-                                            'cinspect:inspect))
+                                              'cinspect:getsource-with-jedi
+                                            'cinspect:getsource))
             (when cinspect:use-as-jedi-goto-fallback
-              (define-key map (kbd "C-c .") 'cinspect:inspect-with-jedi-as-jedi-fallback))
+              (define-key map (kbd "C-c .") 'cinspect:getsource-with-jedi-as-jedi-fallback))
             map))
 
 ;;;###autoload
