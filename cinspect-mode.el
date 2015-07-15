@@ -75,6 +75,40 @@
     (message "Inspecting `%s'" name)
     (cinspect:--python-cinspect name)))
 
+(defun cinspect:--join-python-statements (&rest statements)
+  (mapconcat (lambda (statement)
+               (if (zerop (length statement))
+                   ""
+                 (concat statement "; ")))
+             statements ""))
+
+(defun cinspect:--format-python-command (name import-statement)
+  (list "python" "-c"
+        (cinspect:--join-python-statements
+         "import cinspect"
+         (if (equal name "NoneType")
+             "from types import NoneType"
+           import-statement)
+         (format "print cinspect.getsource(%s)" name))))
+
+(defun cinspect:--python-cinspect (name &optional import-statement)
+  (deferred:$
+    (python-environment-run
+     (cinspect:--format-python-command name import-statement))
+    (deferred:nextc it
+      (lambda (response)
+        (with-temp-buffer-window cinspect:buffer-name nil nil
+                                 (with-current-buffer cinspect:buffer-name
+                                   (c-mode)
+                                   (use-local-map (copy-keymap help-mode-map)))
+                                 (princ response))))
+    (deferred:error it
+      (lambda (err)
+        (if (string-match "ImportError: No module named cinspect" (or (cadr err) ""))
+            (message "Could not find cinspect in emacs python environment. Have you run `cinspect:install-cinspect'?")
+          (message "Error running cinspect: %s" err))))))
+
+
 ;; Begin Jedi interface
 
 (defun cinspect:--python-builtin-p (module)
@@ -117,38 +151,6 @@
 
 ;; End Jedi interface
 
-(defun cinspect:--join-python-statements (&rest statements)
-  (mapconcat (lambda (statement)
-               (if (zerop (length statement))
-                   ""
-                 (concat statement "; ")))
-             statements ""))
-
-(defun cinspect:--format-python-command (name import-statement)
-  (list "python" "-c"
-        (cinspect:--join-python-statements
-         "import cinspect"
-         (if (equal name "NoneType")
-             "from types import NoneType"
-           import-statement)
-         (format "print cinspect.getsource(%s)" name))))
-
-(defun cinspect:--python-cinspect (name &optional import-statement)
-  (deferred:$
-    (python-environment-run
-     (cinspect:--format-python-command name import-statement))
-    (deferred:nextc it
-      (lambda (response)
-        (with-temp-buffer-window cinspect:buffer-name nil nil
-                                 (with-current-buffer cinspect:buffer-name
-                                   (c-mode)
-                                   (use-local-map (copy-keymap help-mode-map)))
-                                 (princ response))))
-    (deferred:error it
-      (lambda (err)
-        (if (string-match "ImportError: No module named cinspect" (or (cadr err) ""))
-            (message "Could not find cinspect in emacs python environment. Have you run `cinspect:install-cinspect'?")
-          (message "Error running cinspect: %s" err))))))
 
 ;; Begin installation helpers
 
