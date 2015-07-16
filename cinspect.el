@@ -1,4 +1,4 @@
-;;; cinspect-mode.el --- Use cinspect to look at the CPython source of builtins and other C objects!
+;;; cinspect.el --- Use cinspect to look at the CPython source of builtins and other C objects!
 
 ;; Copyright (C) 2015 Ben Yelsey
 
@@ -218,6 +218,6 @@ Can be used as a fallback option for `jedi-mode' (https://github.com/tkf/emacs-j
 ;;;###autoload
 (add-hook 'python-mode-hook 'cinspect-mode)
 
-(provide 'cinspect-mode)
+(provide 'cinspect)
 
-;;; cinspect-mode.el ends here
+;;; cinspect.el ends here

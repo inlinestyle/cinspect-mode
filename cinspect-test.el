@@ -1,4 +1,4 @@
-;;; cinspect-mode-test.el --- Tests for cinspect-mode
+;;; cinspect-test.el --- Tests for cinspect
 
 ;; Copyright (C) 2015 Ben Yelsey
 
@@ -14,32 +14,32 @@
 
 (require 'ert)
 (require 'deferred)
-(require 'cinspect-mode)
+(require 'cinspect)
 
 (deferred:sync!
   (cinspect-install-cinspect))
 
-(ert-deftest cinspect-mode-test-python-cinspect ()
+(ert-deftest cinspect-test-python-cinspect ()
   (deferred:sync!
     (cinspect--python-cinspect "map"))
   (with-current-buffer cinspect-buffer-name
     (should (string-match "builtin_map" (buffer-substring-no-properties 1 (1+ (buffer-size)))))))
 
-(ert-deftest cinspect-mode-test-python-cinspect-none ()
+(ert-deftest cinspect-test-python-cinspect-none ()
   "For whatever reason, 'NoneType' is not directly accessible from __builtin__."
   (deferred:sync!
     (cinspect--python-cinspect "NoneType"))
   (with-current-buffer cinspect-buffer-name
     (should (string-match "PyNone_Type" (buffer-substring-no-properties 1 (1+ (buffer-size)))))))
 
-(ert-deftest cinspect-mode-test-join-python-statements ()
+(ert-deftest cinspect-test-join-python-statements ()
   (should (equal (cinspect--join-python-statements "foo")          "foo; "))
   (should (equal (cinspect--join-python-statements "" "foo")       "foo; "))
   (should (equal (cinspect--join-python-statements "foo" "")       "foo; "))
   (should (equal (cinspect--join-python-statements "foo" "bar")    "foo; bar; "))
   (should (equal (cinspect--join-python-statements "foo" "" "bar") "foo; bar; ")))
 
-(ert-deftest cinspect-mode-test-jedi-response-formatting ()
+(ert-deftest cinspect-test-jedi-response-formatting ()
   (dolist (case cinspect--jedi-definition-cases)
     (let ((response (eval (car case)))
           (expected-import-statement (cadr case))
@@ -116,4 +116,4 @@ the items of the sequence (or a list of tuples if more than one sequence)."
            :line_nr nil
            :description "function map")))
 
-;;; cinspect-mode-test.el ends here
+;;; cinspect-test.el ends here
