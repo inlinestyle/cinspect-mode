@@ -3,7 +3,7 @@
 ;; Copyright (C) 2015 Ben Yelsey
 
 ;; Author: Ben Yelsey <ben.yelsey@gmail.com>
-;; Version: 0.1.0
+;; Version: 0.2.0
 ;; Keywords: python
 ;; Homepage: https://github.com/inlinestyle/cinspect-mode
 
@@ -214,9 +214,6 @@ Can be used as a fallback option for `jedi-mode' (https://github.com/tkf/emacs-j
             (when cinspect-use-as-jedi-goto-fallback
               (define-key map (kbd "C-c .") 'cinspect-getsource-with-jedi-as-jedi-fallback))
             map))
-
-;;;###autoload
-(add-hook 'python-mode-hook 'cinspect-mode)
 
 (provide 'cinspect)
 
