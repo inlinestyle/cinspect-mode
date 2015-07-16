@@ -215,9 +215,6 @@ Can be used as a fallback option for `jedi-mode' (https://github.com/tkf/emacs-j
               (define-key map (kbd "C-c .") 'cinspect-getsource-with-jedi-as-jedi-fallback))
             map))
 
-;;;###autoload
-(add-hook 'python-mode-hook 'cinspect-mode)
-
 (provide 'cinspect)
 
 ;;; cinspect.el ends here

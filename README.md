@@ -1,7 +1,7 @@
-# cinspect-mode [![Build Status](https://travis-ci.org/inlinestyle/cinspect-mode.svg?branch=master)](https://travis-ci.org/inlinestyle/cinspect-mode)
+# cinspect [![Build Status](https://travis-ci.org/inlinestyle/cinspect-mode.svg?branch=master)](https://travis-ci.org/inlinestyle/cinspect-mode)
 Use [cinspect](https://github.com/punchagan/cinspect) to look at the CPython source of builtins and other C objects!
 
-`cinspect-mode` can and optimally should be used in concert with [Jedi.el](http://tkf.github.io/emacs-jedi).
+`cinspect` (the Emacs mode) can and optimally should be used in concert with [Jedi.el](http://tkf.github.io/emacs-jedi).
 
 ![](https://raw.github.com/inlinestyle/cinspect-mode/master/images/cinspect-startswith.png)
 
@@ -18,7 +18,15 @@ sorted([1, 6, 7]) # Can do without Jedi.el
 ```
 
 ## Usage
-Run `cinspect-install-cinspect` if you don't have `cinspect` installed in your emacs python environent.
+
+To enable `cinspect` in python mode:
+```elisp
+(add-hook 'python-mode-hook 'cinspect-mode)
+```
+
+Run `cinspect-install-cinspect` if you don't have `cinspect` installed in your emacs python environent. If it fails, you most likely have permissions issues installing python packages (we try to use `virtualenv`, but if your machine doesn't have it installed already getting it seems to be error prone).
+
+`cinspect` comes with the following keyboard shortcuts:
  - `C-c f`: `cinspect-getsource`
  - `C-c .`: (Requires `Jedi.el`) `jedi:goto-definition` with fallback to `cinspect-getsource-with-jedi`
 
