@@ -1,7 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package "cinspect-mode" "0" "Use cinspect to look at the CPython source of builtins")
+(package "cinspect" "0" "Use cinspect to look at the CPython source of builtins")
 
 (development
  (depends-on "cl-lib")

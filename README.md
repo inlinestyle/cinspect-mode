@@ -18,9 +18,9 @@ sorted([1, 6, 7]) # Can do without Jedi.el
 ```
 
 ## Usage
-Run `cinspect:install-cinspect` if you don't have `cinspect` installed in your emacs python environent.
- - `C-c f`: `cinspect:getsource`
- - `C-c .`: (Requires `Jedi.el`) `jedi:goto-definition` with fallback to `cinspect:getsource-with-jedi`
+Run `cinspect-install-cinspect` if you don't have `cinspect` installed in your emacs python environent.
+ - `C-c f`: `cinspect-getsource`
+ - `C-c .`: (Requires `Jedi.el`) `jedi:goto-definition` with fallback to `cinspect-getsource-with-jedi`
 
 ## TODO
  - Add test installation of Jedi.el

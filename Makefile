@@ -20,7 +20,7 @@ build :
 	$(CASKEMACS) $(EMACS_BATCH) --eval            \
 	    "(progn                                   \
 	      (setq byte-compile-error-on-warn t)     \
-	      (batch-byte-compile))" cinspect-mode.el
+	      (batch-byte-compile))" cinspect.el
 
 autoloads :
 	$(EMACS) $(EMACS_BATCH) --eval                                         \
